@@ -1,0 +1,71 @@
+extends layout
+
+block content
+  #dialog-form(title='Journey Data Configuration')
+    h5(align='center')
+      strong(style='color: #FB3802') Journey Data Configuration
+    p.validateTips Please choose or input ALL requird form fields.
+    form
+      fieldset
+        label(for='gtype') GPS Select
+        select#gtype.text.ui-widget-content.ui-corner-all(name='gtype', style='width: 100px;')
+          option(value='0') select---
+        br
+        br
+        label(for='gformation') GPS Data Formation
+        select#gformation.text.ui-widget-content.ui-corner-all(name='gformation', style='width: 120px;')
+          option(value='0') select---
+          option(value='full') Full Data
+          option(value='simplify') Simplify and Full Data
+        br
+        br
+        label(for='btime') Begin Time
+        input#btime.text.ui-widget-content.ui-corner-all(type='text', name='btime', style='width: 180px;', value='')
+        label(for='etime') End Time
+        input#etime.text.ui-widget-content.ui-corner-all(type='text', name='etime', style='width: 180px;', value='')
+        input(type='submit', tabindex='-1', style='position:absolute; top:-1000px')
+  nav
+    .nav(style='padding-left: 10px; padding-right: 10px; background-color: #B8E0D4;')
+      div(style='width: 1250px; margin-left: auto; margin-right: auto;')
+        a(href='http://nquiringminds.com/')
+          img#logo(src='http://nqm3.nickallott.com/files/2015/02/nqminds-blue-logo1-300x57.png', alt='nquiringminds')
+  .clear
+  br
+  .vertical-center
+    .container-fluid(style='width: 1280px; overflow:auto;')
+      // row 1
+      .row-fluid.row-1
+        .col-sm-9
+          p(style='font-size: 150%')
+            | Select a GPS data and give the dates from the button to the right to view journeys for that GPS, you can select the journey to view by double clicking on the journey name in the "No." column of the journey list table. The full details of each journey can be presented in the table below the map along with a full or breakdown of the data used to create the journey's list as required.
+        .col-sm-3
+          button#gpsconfig.btn.btn-primary(type='button', style='float: left;')
+            span(style='font-size:15px;') Data Choice
+          span#gData(style='float: left;')
+          br
+      // row 2
+      .row-fluid.row-2
+        .col-sm-9
+          label
+            | Journey map:
+            span.jNumber
+          #map(style='width: 935px; height: 500px;')
+        .col-sm-3.myhtml1
+      .clear
+      br
+      // row button
+      .row-fluid.row-button
+        .col-sm-12
+          button#gpstable.btn.btn-primary(type='button', style='float: left;', value='1', onclick='updateData()')
+            span(style='font-size:15px;') Show Data Table
+          span#gtable(style='float: left;')
+            h5   GPS Data Table OFF
+      .clear
+      br
+      // row 3
+      .row-fluid.row-3
+        .col-sm-6.myhtml2
+        .col-sm-6.myhtml3
+  br
+  br
+  script(src='javascripts/main.js')
