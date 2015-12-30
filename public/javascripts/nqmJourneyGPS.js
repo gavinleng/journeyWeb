@@ -437,6 +437,10 @@ function getDataTotal(gpsData, journeyData, flag, text) {
         return a.start - b.start;
     });
 
+    if (data1[0].timestamp > jdata[0].start) jdata[0].start = data1[0].timestamp;
+
+    if (data1[data1.length - 1].timestamp < jdata[jdata.length - 1].end) jdata[jdata.length - 1].end = data1[data1.length - 1].timestamp;
+
     flagFormation = [];
     flagFormation[0] = flag;
     flagFormation[1] = false;
@@ -505,6 +509,52 @@ function journeyDataOrder(data, jdata, flagFormation) {
             len1 = startS.length;
 
             sData = [];
+
+            if (i == 0) {
+                for (j = 0; j < len1; j++) {
+                    if (startS[j] >= jdata[i].start) {
+                        sData.push(startS[j]);
+                    }
+                }
+
+                startS = sData;
+
+                startS = startS.sort(function(a, b) {
+                    return a - b
+                });
+
+                len1 = startS.length;
+
+                if (len1 == 0) {
+                    startS.push(jdata[i].start);
+                    len1 = startS.length;
+                }
+
+                sData = [];
+            }
+
+            if (i == (len - 1)) {
+                for (j = 0; j < len1; j++) {
+                    if (startS[j] <= jdata[i].end) {
+                        sData.push(startS[j]);
+                    }
+                }
+
+                startS = sData;
+
+                startS = startS.sort(function(a, b) {
+                    return a - b
+                });
+
+                len1 = startS.length;
+
+                if (len1 == 0) {
+                    startS.push(jdata[i].end);
+                    len1 = startS.length;
+                }
+
+                sData = [];
+            }
 
             for (j = 0; j < len1; j++) {
                 numStartS = data.filter(function(item) {

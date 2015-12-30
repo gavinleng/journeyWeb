@@ -153,7 +153,7 @@ $(function() {
 
         if (endTime > currentTime) {
             alert("The end time cannot after the current time. Setting the end time as the current time.");
-			
+
             endTime = currentTime;
         }
 
@@ -191,7 +191,7 @@ $(function() {
                 console.warn(error);
 
                 $("#gpsconfig, #gpstable").prop('disabled', false);
-				$("#gData").html("");
+                $("#gData").html("");
 
                 return 0;
             }
@@ -204,24 +204,28 @@ $(function() {
             var gpsurl = baseurl + '&' + filterurl;
 
             //get the GPS data.
-            d3.json(gpsurl, function(error, gpsData) {
+            d3.json(gpsurl, function(error, gData) {
                 if (error) {
                     alert(error);
                     console.warn(error);
 
                     $("#gpsconfig, #gpstable").prop('disabled', false);
-					$("#gData").html("");
+                    $("#gData").html("");
 
                     return 0;
                 }
 
-                var gpsData = gpsData.data;
+                var gpsData = gData.data;
+
+                gpsData = gpsData.sort(function(a, b) {
+                    return a.timestamp - b.timestamp;
+                });
 
                 if (gpsData.length == 0) {
                     alert("No gps data in the given time period. Please check the time setting.");
 
                     $("#gpsconfig, #gpstable").prop('disabled', false);
-					$("#gData").html("");
+                    $("#gData").html("");
 
                     return 0;
                 }
@@ -229,66 +233,105 @@ $(function() {
                 journeyurl += '?opts={"limit":' + count + '}';
 
                 filterurl = 'filter={"start":{"$gte":' + startTime + '},"end":{"$lte":' + endTime + '}}';
-                journeyurl = journeyurl + '&' + filterurl;
+                journeyurl1 = journeyurl + '&' + filterurl;
 
                 // Get the splitting or simplified data.
-                d3.json(journeyurl, function(error, journeyData) {
+                d3.json(journeyurl1, function(error, jData) {
                     if (error) {
                         alert(error);
                         console.warn(error);
 
                         $("#gpsconfig, #gpstable").prop('disabled', false);
-						$("#gData").html("");
+                        $("#gData").html("");
 
                         return 0;
                     }
 
-                    var journeyData = journeyData.data;
+                    var journeyData = jData.data;
+
+                    journeyData = journeyData.sort(function(a, b) {
+                        return a.start - b.start;
+                    });
 
                     if (journeyData.length == 0) {
                         alert("No journey data in the given time period. Please check the time setting.");
 
                         $("#gpsconfig, #gpstable").prop('disabled', false);
-						$("#gData").html("");
+                        $("#gData").html("");
 
                         return 0;
                     }
-					
-					var inumber = gtype.val().replace("GPS", "");
-					
-					if (gformation.val() == "full") {
-						if (journeyData[0].gpsDataId != journeyAPI[+inumber - 1].gpsDataId) {
-							alert("The splitting data is not got from the GPS data. Please check the data sets.");
-							$("#gData").html("");
-							
-							return 0;
-						}
-					}
 
-					if (gformation.val() == "simplify") {
-						if (journeyData[0].gpsDataId != journeyAPI[+inumber - 1].gpsDataId) {
-							alert("The splitting data is not got from the GPS data. Please check the data sets.");
-							$("#gData").html("");
-							
-							return 0;
-						}
-						
-						if (journeyData[0].splitDataId != journeyAPI[+inumber - 1].splitDataId) {
-							alert("The simplified data is not got from the splitting data. Please check the data sets.");
-							$("#gData").html("");
-							
-							return 0;
-						}
-					}
-				
-                    $("#gData").html(textString1);
+                    var inumber = gtype.val().replace("GPS", "");
 
-                    $("#gpsconfig, #gpstable").prop('disabled', false);
+                    if (flagFormation == false) {
+                        if (journeyData[0].gpsDataId != journeyAPI[+inumber - 1].gpsDataId) {
+                            alert("The splitting data is not got from the GPS data. Please check the data sets.");
+                            $("#gData").html("");
 
-                    getDataTotal(gpsData, journeyData, flagFormation, textString);
+                            return 0;
+                        }
+                    }
+
+                    if (flagFormation == true) {
+                        if (journeyData[0].gpsDataId != journeyAPI[+inumber - 1].gpsDataId) {
+                            alert("The splitting data is not got from the GPS data. Please check the data sets.");
+                            $("#gData").html("");
+
+                            return 0;
+                        }
+
+                        if (journeyData[0].splitDataId != journeyAPI[+inumber - 1].splitDataId) {
+                            alert("The simplified data is not got from the splitting data. Please check the data sets.");
+                            $("#gData").html("");
+
+                            return 0;
+                        }
+                    }
+
+                    if ((gpsData[0].timestamp < journeyData[0].start) || (gpsData[gpsData.length - 1].timestamp > journeyData[journeyData.length - 1].end)) {
+
+                        filterurl = 'filter={"$or":[{"end":{"$gte":' + gpsData[0].timestamp + ',"$lt":' + journeyData[0].start + '}},{"start":{"$gt":' + journeyData[journeyData.length - 1].end + ',"$lte":' + gpsData[gpsData.length - 1].timestamp + '}}]}';
+                        journeyurl2 = journeyurl + '&' + filterurl;
+
+                        // Get the splitting or simplified data.
+                        d3.json(journeyurl2, function(error, jData1) {
+                            if (error) {
+                                alert(error);
+                                console.warn(error);
+
+                                $("#gpsconfig, #gpstable").prop('disabled', false);
+                                $("#gData").html("");
+
+                                return 0;
+                            }
+
+                            var jjData = jData1.data;
+
+                            if (jjData.length > 0) {
+                                for (var i = 0; i < jjData.length; i++) {
+                                    journeyData.push(jjData[i]);
+                                }
+                            }
+
+                            sentData(gpsData, journeyData, flagFormation, textString);
+                        });
+
+
+                    } else {
+                        sentData(gpsData, journeyData, flagFormation, textString);
+                    }
                 });
             });
         });
+
+        function sentData(gpsData, journeyData, flagFormation, textString) {
+            $("#gData").html(textString1);
+
+            $("#gpsconfig, #gpstable").prop('disabled', false);
+
+            getDataTotal(gpsData, journeyData, flagFormation, textString);
+        }
     }
 
     function getAPIData() {
@@ -298,7 +341,7 @@ $(function() {
             clickCount = -1;
 
             reqsent();
-           
+
             dialog.dialog("close");
         }
 
