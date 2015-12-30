@@ -128,11 +128,6 @@ $(function() {
             if (typeof myGrid3 != "undefined") myGrid3.remove();
         }
 
-        gtype.find('option[value=' + gtype.val() + ']').attr("selected", "selected");
-        gformation.find('option[value=' + gformation.val() + ']').attr("selected", "selected");
-        btime.attr("value", btime.val());
-        etime.attr("value", etime.val());
-
         var reqlist = btime.val().trim();
         reqlist = reqlist.split('/');
 
@@ -329,15 +324,13 @@ $(function() {
         buttons: {
             "Submit": getAPIData,
             "Cancel": function() {
-                gtype.find('option[value=' + gtype.val() + ']').attr("selected", "selected");
-                gformation.find('option[value=' + gformation.val() + ']').attr("selected", "selected");
-                btime.attr("value", btime.val());
-                etime.attr("value", etime.val());
-
                 dialog.dialog("close");
             }
         },
         close: function() {
+            btime.attr("value", btime.val());
+            etime.attr("value", etime.val());
+
             form[0].reset();
             allFields.removeClass("ui-state-error");
         }
