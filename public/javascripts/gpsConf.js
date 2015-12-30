@@ -191,6 +191,7 @@ $(function() {
                 console.warn(error);
 
                 $("#gpsconfig, #gpstable").prop('disabled', false);
+				$("#gData").html("");
 
                 return 0;
             }
@@ -209,6 +210,7 @@ $(function() {
                     console.warn(error);
 
                     $("#gpsconfig, #gpstable").prop('disabled', false);
+					$("#gData").html("");
 
                     return 0;
                 }
@@ -219,6 +221,7 @@ $(function() {
                     alert("No gps data in the given time period. Please check the time setting.");
 
                     $("#gpsconfig, #gpstable").prop('disabled', false);
+					$("#gData").html("");
 
                     return 0;
                 }
@@ -235,6 +238,7 @@ $(function() {
                         console.warn(error);
 
                         $("#gpsconfig, #gpstable").prop('disabled', false);
+						$("#gData").html("");
 
                         return 0;
                     }
@@ -245,6 +249,7 @@ $(function() {
                         alert("No journey data in the given time period. Please check the time setting.");
 
                         $("#gpsconfig, #gpstable").prop('disabled', false);
+						$("#gData").html("");
 
                         return 0;
                     }
@@ -254,6 +259,7 @@ $(function() {
 					if (gformation.val() == "full") {
 						if (journeyData[0].gpsDataId != journeyAPI[+inumber - 1].gpsDataId) {
 							alert("The splitting data is not got from the GPS data. Please check the data sets.");
+							$("#gData").html("");
 							
 							return 0;
 						}
@@ -262,12 +268,14 @@ $(function() {
 					if (gformation.val() == "simplify") {
 						if (journeyData[0].gpsDataId != journeyAPI[+inumber - 1].gpsDataId) {
 							alert("The splitting data is not got from the GPS data. Please check the data sets.");
+							$("#gData").html("");
 							
 							return 0;
 						}
 						
 						if (journeyData[0].splitDataId != journeyAPI[+inumber - 1].splitDataId) {
 							alert("The simplified data is not got from the splitting data. Please check the data sets.");
+							$("#gData").html("");
 							
 							return 0;
 						}
