@@ -262,33 +262,6 @@ $(function() {
                         return 0;
                     }
 
-                    var inumber = gtype.val().replace("GPS", "");
-
-                    if (flagFormation == false) {
-                        if (journeyData[0].gpsDataId != journeyAPI[+inumber - 1].gpsDataId) {
-                            alert("The splitting data is not got from the GPS data. Please check the data sets.");
-                            $("#gData").html("");
-
-                            return 0;
-                        }
-                    }
-
-                    if (flagFormation == true) {
-                        if (journeyData[0].gpsDataId != journeyAPI[+inumber - 1].gpsDataId) {
-                            alert("The splitting data is not got from the GPS data. Please check the data sets.");
-                            $("#gData").html("");
-
-                            return 0;
-                        }
-
-                        if (journeyData[0].splitDataId != journeyAPI[+inumber - 1].splitDataId) {
-                            alert("The simplified data is not got from the splitting data. Please check the data sets.");
-                            $("#gData").html("");
-
-                            return 0;
-                        }
-                    }
-
                     if ((gpsData[0].timestamp < journeyData[0].start) || (gpsData[gpsData.length - 1].timestamp > journeyData[journeyData.length - 1].end)) {
 
                         filterurl = 'filter={"$or":[{"end":{"$gte":' + gpsData[0].timestamp + ',"$lt":' + journeyData[0].start + '}},{"start":{"$gt":' + journeyData[journeyData.length - 1].end + ',"$lte":' + gpsData[gpsData.length - 1].timestamp + '}}]}';
