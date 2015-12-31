@@ -35,7 +35,7 @@ $(function() {
 
     for (var i = 0; i < journeyAPI.length; i++) {
         gtype.append($('<option>', {
-            value: "GPS" + journeyAPI[i].Id,
+            value: i + 1,
             text: "GPS" + journeyAPI[i].Id
         }));
     }
@@ -113,20 +113,19 @@ $(function() {
     function reqsent() {
         var flagFormation;
 
-        var tableValue = $("#gpstable").val();
+        $("#gpstable").val("1");
+        $("#gpstable").removeClass('darken-2');
 
-        if (tableValue == 0) {
-            $("#gpstable").val("1");
-            $("#gpstable").removeClass('darken-2');
+        var text1 = '<h5>&nbsp;&nbsp;GPS Data Table OFF</h5>';
+        d3.select("#gtable").html(text1);
 
-            var text1 = '<h5>&nbsp;&nbsp;GPS Data Table OFF</h5>';
-            d3.select("#gtable").html(text1);
+        if (typeof tt2 != "undefined") tt2.remove();
+        if (typeof myGrid2 != "undefined") myGrid2.remove();
+        if (typeof tt3 != "undefined") tt3.remove();
+        if (typeof myGrid3 != "undefined") myGrid3.remove();
 
-            if (typeof tt2 != "undefined") tt2.remove();
-            if (typeof myGrid2 != "undefined") myGrid2.remove();
-            if (typeof tt3 != "undefined") tt3.remove();
-            if (typeof myGrid3 != "undefined") myGrid3.remove();
-        }
+        d3.select(".myhtml1").html("");
+        if (typeof myGrid1 != "undefined") myGrid1.remove();
 
         var reqlist = btime.val().trim();
         reqlist = reqlist.split('/');
@@ -143,7 +142,9 @@ $(function() {
         if (startTime > currentTime) {
             alert("Cannot set the start time after today. Please check the time setting.");
 
-            return 0;
+            gpsreload();
+
+            return false;
         }
 
         if (endTime > currentTime) {
@@ -154,23 +155,23 @@ $(function() {
 
         // Setting base url.
         for (var i = 0; i < journeyAPI.length; i++) {
-            if (gtype.val() == "GPS" + journeyAPI[i].Id) {
+            if (gtype.find('option:selected').text() == "GPS" + journeyAPI[i].Id) {
                 var counturl = 'http://q.nqminds.com/v1/datasets/' + journeyAPI[i].gpsDataId + '/count';
                 var baseurl = 'http://q.nqminds.com/v1/datasets/' + journeyAPI[i].gpsDataId + '/data';
 
-                if (gformation.val() == "full") {
+                if (gformation.val() == 1) {
                     var journeyurl = 'http://q.nqminds.com/v1/datasets/' + journeyAPI[i].splitDataId + '/data';
                     flagFormation = false;
                 }
 
-                if (gformation.val() == "simplify") {
+                if (gformation.val() == 2) {
                     var journeyurl = 'http://q.nqminds.com/v1/datasets/' + journeyAPI[i].simplifyDataId + '/data';
                     flagFormation = true;
                 }
             }
         }
 
-        var textString1 = '  <h5>&nbsp;&nbsp;' + gtype.val() + ' (' + gformation.find('option:selected').text() + ')</h5>';
+        var textString1 = '  <h5>&nbsp;&nbsp;' + gtype.find('option:selected').text() + ' (' + gformation.find('option:selected').text() + ')</h5>';
 
         var textString = '  Date from ' + btime.val() + ' to ' + etime.val();
 
@@ -185,10 +186,9 @@ $(function() {
                 alert(error);
                 console.warn(error);
 
-                $("#gpsconfig, #gpstable").prop('disabled', false);
-                $("#gData").html("");
+                gpsreload();
 
-                return 0;
+                return false;
             }
 
             var count = countData.count;
@@ -204,10 +204,9 @@ $(function() {
                     alert(error);
                     console.warn(error);
 
-                    $("#gpsconfig, #gpstable").prop('disabled', false);
-                    $("#gData").html("");
+                    gpsreload();
 
-                    return 0;
+                    return false;
                 }
 
                 var gpsData = gData.data;
@@ -219,16 +218,15 @@ $(function() {
                 if (gpsData.length == 0) {
                     alert("No gps data in the given time period. Please check the time setting.");
 
-                    $("#gpsconfig, #gpstable").prop('disabled', false);
-                    $("#gData").html("");
+                    gpsreload();
 
-                    return 0;
+                    return false;
                 }
 
                 journeyurl += '?opts={"limit":' + count + '}';
 
                 filterurl = 'filter={"start":{"$gte":' + startTime + '},"end":{"$lte":' + endTime + '}}';
-                journeyurl1 = journeyurl + '&' + filterurl;
+                var journeyurl1 = journeyurl + '&' + filterurl;
 
                 // Get the splitting or simplified data.
                 d3.json(journeyurl1, function(error, jData) {
@@ -236,10 +234,9 @@ $(function() {
                         alert(error);
                         console.warn(error);
 
-                        $("#gpsconfig, #gpstable").prop('disabled', false);
-                        $("#gData").html("");
+                        gpsreload();
 
-                        return 0;
+                        return false;
                     }
 
                     var journeyData = jData.data;
@@ -251,16 +248,15 @@ $(function() {
                     if (journeyData.length == 0) {
                         alert("No journey data in the given time period. Please check the time setting.");
 
-                        $("#gpsconfig, #gpstable").prop('disabled', false);
-                        $("#gData").html("");
+                        gpsreload();
 
-                        return 0;
+                        return false;
                     }
 
                     if ((gpsData[0].timestamp < journeyData[0].start) || (gpsData[gpsData.length - 1].timestamp > journeyData[journeyData.length - 1].end)) {
 
                         filterurl = 'filter={"$or":[{"end":{"$gte":' + gpsData[0].timestamp + ',"$lt":' + journeyData[0].start + '}},{"start":{"$gt":' + journeyData[journeyData.length - 1].end + ',"$lte":' + gpsData[gpsData.length - 1].timestamp + '}}]}';
-                        journeyurl2 = journeyurl + '&' + filterurl;
+                        var journeyurl2 = journeyurl + '&' + filterurl;
 
                         // Get the splitting or simplified data.
                         d3.json(journeyurl2, function(error, jData1) {
@@ -268,10 +264,9 @@ $(function() {
                                 alert(error);
                                 console.warn(error);
 
-                                $("#gpsconfig, #gpstable").prop('disabled', false);
-                                $("#gData").html("");
+                                gpsreload();
 
-                                return 0;
+                                return false;
                             }
 
                             var jjData = jData1.data;
@@ -284,8 +279,6 @@ $(function() {
 
                             sentData(gpsData, journeyData, flagFormation, textString);
                         });
-
-
                     } else {
                         sentData(gpsData, journeyData, flagFormation, textString);
                     }
@@ -300,6 +293,22 @@ $(function() {
 
             getDataTotal(gpsData, journeyData, flagFormation, textString);
         }
+    }
+
+    function gpsreload() {
+        var optslength = gtype.find('option').length;
+
+        for (var i = 1; i < optslength; i++) {
+            gtype.find('option[value=' + i + ']').attr("selected", false);
+        }
+
+        optslength = gformation.find('option').length;
+
+        for (var i = 1; i < optslength; i++) {
+            gformation.find('option[value=' + i + ']').attr("selected", false);
+        }
+
+        window.location.reload();
     }
 
     function getAPIData() {
@@ -328,8 +337,27 @@ $(function() {
             }
         },
         close: function() {
+            var optslength = gtype.find('option').length;
+
+            for (var i = 1; i < optslength; i++) {
+                if (i != gtype.val()) {
+                    gtype.find('option[value=' + i + ']').attr("selected", false);
+                }
+            }
+
+            optslength = gformation.find('option').length;
+
+            for (var i = 1; i < optslength; i++) {
+                if (i != gformation.val()) {
+                    gformation.find('option[value=' + i + ']').attr("selected", false);
+                }
+            }
+
+            gtype.find('option[value=' + gtype.val() + ']').attr("selected", "selected");
+            gformation.find('option[value=' + gformation.val() + ']').attr("selected", "selected");
             btime.attr("value", btime.val());
             etime.attr("value", etime.val());
+            $("#gpsconfig").prop('disabled', false);
 
             form[0].reset();
             allFields.removeClass("ui-state-error");
