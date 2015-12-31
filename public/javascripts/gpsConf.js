@@ -277,22 +277,22 @@ $(function() {
                                 }
                             }
 
-                            sentData(gpsData, journeyData, flagFormation, textString);
+                            sendData(gpsData, journeyData, flagFormation, textString, textString1);
                         });
                     } else {
-                        sentData(gpsData, journeyData, flagFormation, textString);
+                        sendData(gpsData, journeyData, flagFormation, textString, textString1);
                     }
                 });
             });
         });
+    }
 
-        function sentData(gpsData, journeyData, flagFormation, textString) {
-            $("#gData").html(textString1);
+    function sendData(gpsData, journeyData, flagFormation, textString, textString1) {
+        $("#gData").html(textString1);
 
-            $("#gpsconfig, #gpstable").prop('disabled', false);
+        $("#gpsconfig, #gpstable").prop('disabled', false);
 
-            getDataTotal(gpsData, journeyData, flagFormation, textString);
-        }
+        getDataTotal(gpsData, journeyData, flagFormation, textString);
     }
 
     function gpsreload() {
