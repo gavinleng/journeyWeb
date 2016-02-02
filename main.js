@@ -27,6 +27,6 @@ app.get('/', function (req, res) {
     });
 });
 
-app.listen(3008);
+app.listen(3002);
 
-console.log('Server running at http://127.0.0.1:3008/');
+console.log('Server running at http://127.0.0.1:3002/');
