@@ -20,10 +20,8 @@ function fLineData(data, simplifiedIndex) {
 function mapShowInit() {
     map = L.map('map').setView([50.96139, -1.42528], 13);
 
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-        maxZoom: 20,
-        id: 'gleng.c0d22786',
-        accessToken: 'pk.eyJ1IjoiZ2xlbmciLCJhIjoiYTczMjU0YTlhZTY2YTQyZjYyN2Q1YTZmNzhiZDlhOWQifQ.DPM1q1yqXNGi1FT-sNA9qQ'
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18
     }).addTo(map);
 
     L.control.scale().addTo(map);
