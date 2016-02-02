@@ -27,6 +27,12 @@ $(function() {
         dateFormat: 'dd/mm/yy'
     });
 
+    var currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() - 1);
+    var yesterday = (currentDate.getDate() < 10 ? "0" : "") + currentDate.getDate() + "/" +  ((currentDate.getMonth() + 1) < 10 ? "0" : "") + (currentDate.getMonth() + 1) + "/" + currentDate.getFullYear();
+
+    etime.prop('value', yesterday);
+
     $("#gpstable").prop('disabled', true);
 
     var journeyAPI = setAPI.GPSData.sort(function(a, b) {
